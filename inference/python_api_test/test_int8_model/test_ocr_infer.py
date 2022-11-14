@@ -49,7 +49,6 @@ def load_config(file_path):
     return config
 
 
-
 def get_output_tensors(args, predictor):
     """
     get output tensors func
@@ -141,8 +140,17 @@ def predict_image(predictor, rerun_flag=False):
     monitor.stop()
     avg_time = float(predict_time) / repeats
     monitor_result = monitor.output()
-    cpu_mem = monitor_result['result']['cpu_memory.used'] if ('result' in monitor_result and 'cpu_memory.used' in monitor_result['result']) else 0
-    gpu_mem = monitor_result['result']['gpu_memory.used'] if ('result' in monitor_result and 'gpu_memory.used' in monitor_result['result']) else 0
+
+    cpu_mem = (
+        monitor_result["result"]["cpu_memory.used"]
+        if ("result" in monitor_result and "cpu_memory.used" in monitor_result["result"])
+        else 0
+    )
+    gpu_mem = (
+        monitor_result["result"]["gpu_memory.used"]
+        if ("result" in monitor_result and "gpu_memory.used" in monitor_result["result"])
+        else 0
+    )
 
     print("[Benchmark] cpu_mem:{} MB, gpu_mem: {} MB".format(cpu_mem, gpu_mem))
     time_avg = predict_time / sample_nums
@@ -151,6 +159,7 @@ def predict_image(predictor, rerun_flag=False):
             round(time_min * 1000, 2), round(time_max * 1000, 1), round(time_avg * 1000, 1)
         )
     )
+
 
 extra_input_models = ["SRN", "NRTR", "SAR", "SEED", "SVTR", "VisionLAN", "RobustScanner"]
 
@@ -206,6 +215,7 @@ def eval(args):
     for k, v in metric.items():
         logger.info("{}:{}".format(k, v))
 
+
 def main():
     """
     main func
@@ -244,6 +254,7 @@ def main():
 
     if rerun_flag:
         print("***** Collect dynamic shape done, Please rerun the program to get correct results. *****")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
