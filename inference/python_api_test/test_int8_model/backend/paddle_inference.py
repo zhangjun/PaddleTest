@@ -79,6 +79,10 @@ class PaddleInferenceEngine(object):
                     pred_cfg.enable_mkldnn_int8(
                         {"conv2d", "depthwise_conv2d", "pool2d", "transpose2", "elementwise_mul"}
                     )
+        # pred_cfg.disable_glog_info()
+        config.delete_pass("conv_transpose_eltwiseadd_bn_fuse_pass")
+        config.delete_pass("matmul_transpose_reshape_fuse_pass")
+        config.switch_use_feed_fetch_ops(False)
 
         precision_map = {
             "int8": Config.Precision.Int8,
@@ -107,6 +111,7 @@ class PaddleInferenceEngine(object):
 
         # enable shared memory
         config.enable_memory_optim()
+        config.switch_ir_optim(True)
         self.predictor = create_predictor(config)
         self.input_handles = [self.predictor.get_input_handle(name) for name in self.predictor.get_input_names()]
         self.output_handles = [self.predictor.get_output_handle(name) for name in self.predictor.get_output_names()]
